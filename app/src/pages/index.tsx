@@ -6,14 +6,14 @@ import GreeksTable from "@/components/Table/GreeksTable";
 import { OptionData, PriceData } from "@/types/price";
 import PriceChart from "@/components/Charts/PriceChart";
 
-export default function Home() {
-  const [tokens, setTokens] = useState(["sol"]);
+const Home = () => {
+  const [tokens, setTokens] = useState(["sol", "btc", "eth"]);
   const [tokenInd, setTokenInd] = useState(0);
 
   const priceData: PriceData[] = [];
   const optionData: Array<[OptionData, OptionData]> = [];
 
-  useEffect(() => {}, [tokens]);
+  useEffect(() => {}, []);
 
   return (
     <Layout>
@@ -23,7 +23,9 @@ export default function Home() {
           <OptionForm
             tokens={tokens}
             tokenInd={tokenInd}
-            onTokenChange={(e) => setTokenInd(e.target.value)}
+            onTokenChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setTokenInd(e.target.selectedIndex)
+            }
           />
           <PriceChart token={tokens[tokenInd]} data={priceData} />
         </HStack>
@@ -31,4 +33,6 @@ export default function Home() {
       </VStack>
     </Layout>
   );
-}
+};
+
+export default Home;
