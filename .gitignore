@@ -1,4 +1,9 @@
-.env
+.DS_Store
+
+# build files
 node_modules/
 .next/
+
+# environment files
+.env
 firebaseSA.json

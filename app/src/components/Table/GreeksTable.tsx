@@ -27,8 +27,8 @@ const GreeksTable: React.FC<GreeksTableProps> = ({ data }) => {
           </Tr>
         </Thead>
         <Tbody>
-          {data.map(([call, put]) => (
-            <Tr>
+          {data.map(([call, put], id) => (
+            <Tr key={id}>
               <Th>{call.greeks.rho}</Th>
               <Th>{call.greeks.vega}</Th>
               <Th>{call.greeks.theta}</Th>
