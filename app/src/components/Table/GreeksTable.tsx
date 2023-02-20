@@ -1,4 +1,12 @@
-import { TableContainer, Table, Thead, Tbody, Tr, Th } from "@chakra-ui/react";
+import {
+  TableContainer,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+} from "@chakra-ui/react";
 import { Greeks, OptionData } from "@/types/price";
 
 interface GreeksTableProps {
@@ -6,6 +14,69 @@ interface GreeksTableProps {
 }
 
 const GreeksTable: React.FC<GreeksTableProps> = ({ data }) => {
+  data = [
+    [
+      {
+        symbol: "sol",
+        type: "call",
+        expiry: new Date(),
+        strike: 19,
+        greeks: {
+          premium: 0.1,
+          delta: 0.1,
+          gamma: 0.1,
+          theta: 0.1,
+          vega: 0.1,
+          rho: 0.1,
+        },
+      },
+      {
+        symbol: "sol",
+        type: "put",
+        expiry: new Date(),
+        strike: 19,
+        greeks: {
+          premium: 0.1,
+          delta: 0.1,
+          gamma: 0.1,
+          theta: 0.1,
+          vega: 0.1,
+          rho: 0.1,
+        },
+      },
+    ],
+    [
+      {
+        symbol: "sol",
+        type: "call",
+        expiry: new Date(),
+        strike: 19,
+        greeks: {
+          premium: 0.1,
+          delta: 0.1,
+          gamma: 0.1,
+          theta: 0.1,
+          vega: 0.1,
+          rho: 0.1,
+        },
+      },
+      {
+        symbol: "sol",
+        type: "put",
+        expiry: new Date(),
+        strike: 19,
+        greeks: {
+          premium: 0.1,
+          delta: 0.1,
+          gamma: 0.1,
+          theta: 0.1,
+          vega: 0.1,
+          rho: 0.1,
+        },
+      },
+    ],
+  ];
+
   return (
     <TableContainer>
       <Table variant="simple">
@@ -29,19 +100,26 @@ const GreeksTable: React.FC<GreeksTableProps> = ({ data }) => {
         <Tbody>
           {data.map(([call, put], id) => (
             <Tr key={id}>
-              <Th>{call.greeks.rho}</Th>
-              <Th>{call.greeks.vega}</Th>
-              <Th>{call.greeks.theta}</Th>
-              <Th>{call.greeks.gamma}</Th>
-              <Th>{call.greeks.delta}</Th>
-              <Th>{call.greeks.premium}</Th>
-              <Th>{call.strike}</Th>
-              <Th>{put.greeks.premium}</Th>
-              <Th>{put.greeks.delta}</Th>
-              <Th>{put.greeks.gamma}</Th>
-              <Th>{put.greeks.theta}</Th>
-              <Th>{put.greeks.vega}</Th>
-              <Th>{put.greeks.rho}</Th>
+              <Td isNumeric>{call.greeks.rho}</Td>
+              <Td isNumeric>{call.greeks.vega}</Td>
+              <Td isNumeric>{call.greeks.theta}</Td>
+              <Td isNumeric>{call.greeks.gamma}</Td>
+              <Td isNumeric>{call.greeks.delta}</Td>
+              <Td isNumeric>{call.greeks.premium}</Td>
+              <Td
+                isNumeric
+                css={{
+                  background: "#FEEBC8",
+                }}
+              >
+                {call.strike}
+              </Td>
+              <Td isNumeric>{put.greeks.premium}</Td>
+              <Td isNumeric>{put.greeks.delta}</Td>
+              <Td isNumeric>{put.greeks.gamma}</Td>
+              <Td isNumeric>{put.greeks.theta}</Td>
+              <Td isNumeric>{put.greeks.vega}</Td>
+              <Td isNumeric>{put.greeks.rho}</Td>
             </Tr>
           ))}
         </Tbody>

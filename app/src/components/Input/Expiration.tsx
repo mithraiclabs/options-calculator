@@ -3,16 +3,29 @@ import {
   SliderTrack,
   SliderFilledTrack,
   SliderThumb,
+  Box,
+  Text,
 } from "@chakra-ui/react";
 
-const ExpirationInput = () => {
+interface ExpirationInputProps {
+  value: number;
+  onChange: (nextValue: number) => void;
+}
+
+const ExpirationInput: React.FC<ExpirationInputProps> = ({
+  value,
+  onChange,
+}) => {
   return (
-    <Slider aria-label="slider-ex-1" defaultValue={30}>
-      <SliderTrack>
-        <SliderFilledTrack />
-      </SliderTrack>
-      <SliderThumb />
-    </Slider>
+    <Box>
+      <Slider aria-label="slider-ex-1" defaultValue={value} onChange={onChange}>
+        <SliderTrack>
+          <SliderFilledTrack />
+        </SliderTrack>
+        <SliderThumb />
+      </Slider>
+      <Text>{value} days</Text>
+    </Box>
   );
 };
 

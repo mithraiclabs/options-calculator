@@ -3,6 +3,14 @@ export interface PriceData {
   date: Date;
 }
 
+export interface OHLCData {
+  date: Date;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+}
+
 export interface Greeks {
   premium: number;
   delta: number;
