@@ -1,3 +1,5 @@
+import axios from "axios";
+
 /**
  * Sleeps for x ms.
  * @param ms number of milliseconds to sleep
@@ -26,15 +28,19 @@ export const formatDate = (date: Date) => {
   const day = ("0" + date.getDate()).slice(-2);
   const month = ("0" + (date.getMonth() + 1)).slice(-2);
   const year = date.getFullYear();
-  return `${year}-${month}/${day}`;
+  return `${year}-${month}-${day}`;
 };
 
 /**
  * Fetch csv.
  */
 export const fetchCsv = (url: string, params: { [id: string]: string }) => {
-  return fetch(url + new URLSearchParams(params))
-    .then((response) => response.text())
+  return axios
+    .get(url, {
+      params,
+      responseType: "blob",
+    })
+    .then((response) => response.data)
     .then((csvText) => {
       const rows = csvText.split("\n");
       const headers = rows[0].split(",");
@@ -42,6 +48,9 @@ export const fetchCsv = (url: string, params: { [id: string]: string }) => {
 
       for (let i = 1; i < rows.length; i++) {
         const values = rows[i].split(",");
+        if (values.length < 2) {
+          continue;
+        }
         const row: { [id: string]: string } = {};
 
         for (let j = 0; j < headers.length; j++) {

@@ -1,126 +1,112 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "@next/font/google";
-import styles from "@/styles/Home.module.css";
+import { useEffect, useState } from "react";
+import { Heading, HStack, useToast, VStack } from "@chakra-ui/react";
+import OptionForm from "@/components/Input/OptionForm";
+import Layout from "@/components/Layout/Layout";
+import GreeksTable from "@/components/Table/GreeksTable";
+import { OptionData, PriceData } from "@/types/price";
+import PriceChart from "@/components/Charts/PriceChart";
+import { fetchPrices, fetchTokens } from "@/utils/api";
+import { OptionFormData } from "@/types/form";
+import axios from "axios";
 
-const inter = Inter({ subsets: ["latin"] });
+const Home = () => {
+  const lookbacks = ["1", "7", "14", "30", "60", "90"];
 
-export default function Home() {
+  const [tokens, setTokens] = useState<string[]>(["solana"]);
+  const [tokenInd, setTokenInd] = useState(0);
+  const [lookback, setLookback] = useState(lookbacks[0]);
+  const [priceData, setPriceData] = useState<PriceData[]>([]);
+  const [optionData, setOptionData] = useState<OptionData[]>([]);
+
+  const toast = useToast();
+
+  const formValues = {
+    lookback: lookbacks[0],
+    volatility: 10,
+    interestRate: 0,
+    maturity: 7,
+  };
+
+  // Initialise data
+  useEffect(() => {
+    fetchTokens("solana-ecosystem")
+      .then((data) => setTokens(data))
+      .catch((e) => {
+        toast({
+          title: "failed to fetch tokens",
+          description: e.toString(),
+          status: "error",
+          position: "top-right",
+          isClosable: true,
+        });
+        setTokens(["solana"]);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toast]);
+
+  // Update graph on token change
+  useEffect(() => {
+    fetchPrices(tokens[tokenInd], parseInt(lookback))
+      .then((data) => setPriceData(data))
+      .catch((e) => {
+        toast({
+          title: "failed to fetch prices",
+          description: e.toString(),
+          status: "error",
+          position: "top-right",
+          isClosable: true,
+        });
+      });
+  }, [tokens, tokenInd, toast, lookback]);
+
+  const handleFormSubmit = (values: OptionFormData) => {
+    const payload = {
+      token: tokens[tokenInd],
+      price_step: 1,
+      num_rows: 10,
+      expiry: values.maturity,
+      volatility: values.volatility,
+      interest_rate: values.interestRate,
+    };
+    axios
+      .get("/api/bs", { params: payload })
+      .then((res) => {
+        setOptionData(res.data);
+      })
+      .catch((e) => {
+        toast({
+          title: "failed to fetch option data",
+          description: e.toString(),
+          status: "error",
+          position: "top-right",
+          isClosable: true,
+        });
+      });
+  };
+
   return (
-    <>
-      <Head>
-        <title>Options calculator</title>
-        <meta
-          name="description"
-          content="Options calculator using the black scholes model"
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>src/pages/index.tsx</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{" "}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
-
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
+    <Layout>
+      <VStack spacing={8}>
+        <Heading>Options Pricing Calculator</Heading>
+        <HStack spacing={4} width="100%">
+          <OptionForm
+            tokens={tokens}
+            lookbacks={lookbacks}
+            lookback={lookback}
+            onLookbackChange={setLookback}
+            tokenInd={tokenInd}
+            onTokenChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setTokenInd(e.target.selectedIndex)
+            }
+            defaultValues={formValues}
+            onSubmit={handleFormSubmit}
           />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
-            />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-    </>
+          <PriceChart token={tokens[tokenInd]} data={priceData} />
+        </HStack>
+        <GreeksTable data={optionData} />
+      </VStack>
+    </Layout>
   );
-}
+};
+
+export default Home;
