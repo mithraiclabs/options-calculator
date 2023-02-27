@@ -9,18 +9,14 @@ import {
   VStack,
   Text,
   useToast,
+  Button,
 } from "@chakra-ui/react";
 import { FormikConfig, useFormik } from "formik";
 import ExpirationInput from "./Expiration";
 import RadioGroup from "./RadioGroup";
 import axios from "axios";
-
-interface FormData {
-  lookback: string;
-  volatility: number;
-  interestRates: number;
-  maturity: number;
-}
+import { OptionFormData } from "@/types/form";
+import { getLatestInterestYields } from "@/utils/firestore";
 
 interface OptionFormProps {
   tokens: string[];
@@ -29,8 +25,8 @@ interface OptionFormProps {
   onLookbackChange: (val: string) => void;
   tokenInd: number;
   onTokenChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  defaultValues: FormData;
-  onSubmit: FormikConfig<FormData>["onSubmit"];
+  defaultValues: OptionFormData;
+  onSubmit: FormikConfig<OptionFormData>["onSubmit"];
 }
 
 const OptionForm: React.FC<OptionFormProps> = ({
@@ -46,17 +42,32 @@ const OptionForm: React.FC<OptionFormProps> = ({
   const timeIntervals = ["30min", "4h", "4d"];
   const volatilityAlgos = ["std_dev", "yang_zhang"];
   const [timeInterval, setTimeInterval] = useState(timeIntervals[0]);
+  const [interestDate, setInterestDate] = useState<string>("");
   const [vAlgo, setVAlgo] = useState(volatilityAlgos[0]);
   const [isCalculating, setIsCalculating] = useState(false);
 
   const toast = useToast();
-  const formik = useFormik<FormData>({
+  const formik = useFormik<OptionFormData>({
     initialValues: defaultValues,
     onSubmit: onSubmit,
   });
 
   useEffect(() => {
-    formik.setFieldValue("interestRates", 1);
+    getLatestInterestYields()
+      .then((data) => {
+        // @ts-ignore
+        formik.setFieldValue("interestRate", parseFloat(data["1 YR"]) / 100);
+        setInterestDate(data.id);
+      })
+      .catch((e) => {
+        toast({
+          title: "failed to fetch interest rates",
+          description: e.toString(),
+          status: "error",
+          position: "top-right",
+          isClosable: true,
+        });
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -110,7 +121,7 @@ const OptionForm: React.FC<OptionFormProps> = ({
               </option>
             ))}
           </Select>
-          <FormLabel>Candlestick Interval</FormLabel>
+          <FormLabel>Candlestick interval</FormLabel>
           <RadioGroup
             options={timeIntervals}
             value={timeInterval}
@@ -122,7 +133,7 @@ const OptionForm: React.FC<OptionFormProps> = ({
             value={lookback}
             onChange={onLookbackChange}
           />
-          <FormLabel>Volatility</FormLabel>
+          <FormLabel>Volatility algorithm</FormLabel>
           <RadioGroup
             options={volatilityAlgos}
             value={vAlgo}
@@ -133,10 +144,13 @@ const OptionForm: React.FC<OptionFormProps> = ({
             {isCalculating ? "Calculating" : formik.values.volatility * 100}%
           </Text>
           <FormLabel>Interest rates</FormLabel>
-          <NumberInput value={formik.values.interestRates} isDisabled={true}>
+          <NumberInput
+            value={formik.values.interestRate * 100}
+            isDisabled={true}
+          >
             <NumberInputField />
             <Text as="i" fontSize="sm" color="grey">
-              Retrieved from nasdaq
+              Retrieved from nasdaq {interestDate}
             </Text>
           </NumberInput>
           <FormLabel>Days till maturity</FormLabel>
@@ -144,6 +158,7 @@ const OptionForm: React.FC<OptionFormProps> = ({
             value={formik.values.maturity}
             onChange={(val) => formik.setFieldValue("maturity", val)}
           />
+          <Button onClick={() => formik.handleSubmit()}>Calculate</Button>
         </VStack>
       </FormControl>
     </Container>

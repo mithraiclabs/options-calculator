@@ -5,5 +5,4 @@ node_modules/
 .next/
 
 # environment files
-.env
-firebaseSA.json
+.env*

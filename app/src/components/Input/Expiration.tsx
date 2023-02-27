@@ -18,7 +18,13 @@ const ExpirationInput: React.FC<ExpirationInputProps> = ({
 }) => {
   return (
     <Box>
-      <Slider aria-label="slider-ex-1" defaultValue={value} onChange={onChange}>
+      <Slider
+        aria-label="slider-ex-1"
+        defaultValue={value}
+        onChange={onChange}
+        min={1}
+        max={365}
+      >
         <SliderTrack>
           <SliderFilledTrack />
         </SliderTrack>

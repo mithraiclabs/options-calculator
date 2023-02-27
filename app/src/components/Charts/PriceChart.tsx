@@ -34,7 +34,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ token, data }) => {
       <Text as="b" fontSize="lg" mb={2} py={3}>
         {capitalise(token)} Price Chart
       </Text>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={500}>
         <LineChart width={600} data={data}>
           <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
           <XAxis dataKey={"date"} scale="time" tickFormatter={dateFormatter} />

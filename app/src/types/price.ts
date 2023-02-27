@@ -22,8 +22,9 @@ export interface Greeks {
 
 export interface OptionData {
   symbol: string;
-  type: string;
+  spot: number;
   strike: number;
   expiry: Date;
-  greeks: Greeks;
+  call: Greeks | null;
+  put: Greeks | null;
 }

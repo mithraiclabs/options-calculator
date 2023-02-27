@@ -10,6 +10,15 @@ const client = new CoinGeckoClient({
   autoRetry: false,
 });
 
+export const getCurrentPrice = (token: string): Promise<number> => {
+  return client
+    .simplePrice({
+      ids: token,
+      vs_currencies: "usd",
+    })
+    .then((resp) => resp[token].usd);
+};
+
 /**
  * @param token token id
  * @param lookback days to look back

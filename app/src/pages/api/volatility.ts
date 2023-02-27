@@ -17,7 +17,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       if (algorithm === "yang_zhang") {
         volatility = calcYangZhangVolatility(data);
       } else if (algorithm == "std_dev") {
-        volatility = calcStdDevVolatility(data);
+        volatility = calcStdDevVolatility(data, parseInt(lookback));
       } else {
         res.status(500).json({ error: "invalid algorithm: " + algorithm });
       }

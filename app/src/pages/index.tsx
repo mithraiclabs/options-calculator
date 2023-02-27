@@ -6,6 +6,8 @@ import GreeksTable from "@/components/Table/GreeksTable";
 import { OptionData, PriceData } from "@/types/price";
 import PriceChart from "@/components/Charts/PriceChart";
 import { fetchPrices, fetchTokens } from "@/utils/api";
+import { OptionFormData } from "@/types/form";
+import axios from "axios";
 
 const Home = () => {
   const lookbacks = ["1", "7", "14", "30", "60", "90"];
@@ -14,16 +16,14 @@ const Home = () => {
   const [tokenInd, setTokenInd] = useState(0);
   const [lookback, setLookback] = useState(lookbacks[0]);
   const [priceData, setPriceData] = useState<PriceData[]>([]);
-  const [optionData, setOptionData] = useState<Array<[OptionData, OptionData]>>(
-    []
-  );
+  const [optionData, setOptionData] = useState<OptionData[]>([]);
 
   const toast = useToast();
 
   const formValues = {
     lookback: lookbacks[0],
     volatility: 10,
-    interestRates: 0,
+    interestRate: 0,
     maturity: 7,
   };
 
@@ -59,6 +59,31 @@ const Home = () => {
       });
   }, [tokens, tokenInd, toast, lookback]);
 
+  const handleFormSubmit = (values: OptionFormData) => {
+    const payload = {
+      token: tokens[tokenInd],
+      price_step: 1,
+      num_rows: 10,
+      expiry: values.maturity,
+      volatility: values.volatility,
+      interest_rate: values.interestRate,
+    };
+    axios
+      .get("/api/bs", { params: payload })
+      .then((res) => {
+        setOptionData(res.data);
+      })
+      .catch((e) => {
+        toast({
+          title: "failed to fetch option data",
+          description: e.toString(),
+          status: "error",
+          position: "top-right",
+          isClosable: true,
+        });
+      });
+  };
+
   return (
     <Layout>
       <VStack spacing={8}>
@@ -74,7 +99,7 @@ const Home = () => {
               setTokenInd(e.target.selectedIndex)
             }
             defaultValues={formValues}
-            onSubmit={console.log}
+            onSubmit={handleFormSubmit}
           />
           <PriceChart token={tokens[tokenInd]} data={priceData} />
         </HStack>

@@ -38,14 +38,7 @@ export const retrieveCoinPrices = functions.pubsub
       date.toLocaleDateString()
     );
 
-    const coinList = getCoinsList("solana-ecosystem");
+    const coinList = await getCoinsList("solana-ecosystem");
     const coinPrices = await getHistoricalPrices(Object.keys(coinList)); // retrieve coin prices from the past day
     storeCoinPrices(coinPrices, date);
   });
-
-/**
- * Calculate the option prices given a token
- */
-export const calcOption = functions.https.onRequest(async (req, res) => {
-  const id = req.query.id;
-});

@@ -1,9 +1,12 @@
 import { OHLCData } from "@/types/price";
+// @ts-expect-error
+import bs from "black-scholes";
 
 export const stdDev = (data: number[]) => {
   const mean = calcMean(data);
   return Math.sqrt(
-    data.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / data.length
+    data.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) /
+      (data.length - 1)
   );
 };
 
@@ -24,9 +27,13 @@ export const calcYangZhangVolatility = (data: OHLCData[]): number => {
  * Note: 365 trading days per year for crypto
  * @param data - array of ohlc data
  */
-export const calcStdDevVolatility = (data: OHLCData[]): number => {
+export const calcStdDevVolatility = (
+  data: OHLCData[],
+  lookback: number
+): number => {
   const percentChange = data.map((val) => {
-    return (val.close - val.open) / val.open;
+    return Math.log(val.close / val.open);
   });
-  return stdDev(percentChange) * Math.sqrt(365);
+  const num_periods = lookback <= 2 ? 48 : lookback <= 30 ? 6 : 0.25;
+  return stdDev(percentChange) * Math.sqrt(365) * Math.sqrt(num_periods);
 };
