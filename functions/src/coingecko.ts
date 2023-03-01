@@ -74,7 +74,7 @@ export const getHistoricalPrices = async (
       .catch((err: any) => {
         console.log("Error retrieving prices for:", coin, err);
       });
-    await sleep(5000);
+    await sleep(2000);
   }
   return priceList;
 };

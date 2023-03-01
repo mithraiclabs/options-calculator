@@ -15,7 +15,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     .then((data) => {
       let volatility = 0;
       if (algorithm === "yang_zhang") {
-        volatility = calcYangZhangVolatility(data);
+        volatility = calcYangZhangVolatility(data, parseInt(lookback));
       } else if (algorithm == "std_dev") {
         volatility = calcStdDevVolatility(data, parseInt(lookback));
       } else {
