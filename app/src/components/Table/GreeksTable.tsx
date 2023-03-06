@@ -71,13 +71,13 @@ const GreeksTable: React.FC<GreeksTableProps> = ({ data }) => {
                 {round(row.call?.delta, 2)}
               </Td>
               <Td isNumeric bgColor={getBgColor(row, true)}>
-                {round(row.call?.premium, 2)}
+                ${round(row.call?.premium, 2)}
               </Td>
               <Td isNumeric bgColor="gray.100">
-                {row.strike}
+                ${row.strike}
               </Td>
               <Td isNumeric bgColor={getBgColor(row, false)}>
-                {round(row.put?.premium, 2)}
+                ${round(row.put?.premium, 2)}
               </Td>
               <Td isNumeric bgColor={getBgColor(row, false)}>
                 {round(row.put?.delta, 2)}

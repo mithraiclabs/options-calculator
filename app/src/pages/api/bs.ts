@@ -1,6 +1,7 @@
 import { OptionData } from "@/types/price";
 import { getCurrentPrice } from "@/utils/api";
 import { BS, BSHolder } from "@/utils/bs";
+import { round } from "@/utils/math";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ReqInput = {
@@ -18,8 +19,9 @@ const getStrikes = (
   priceStep: number
 ): number[] => {
   const strikes = [];
+  currentPrice = round(currentPrice, 2);
   for (let i = 0; i < numRows; i++) {
-    const strike = Math.ceil(currentPrice + (i - numRows / 2) * priceStep);
+    const strike = round(currentPrice + (i - numRows / 2) * priceStep, 2);
     if (strike > 0) {
       strikes.push(strike);
     }

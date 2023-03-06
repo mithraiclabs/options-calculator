@@ -8,6 +8,7 @@ import PriceChart from "@/components/Charts/PriceChart";
 import { fetchPrices, fetchTokens } from "@/utils/api";
 import { OptionFormData } from "@/types/form";
 import axios from "axios";
+import { calcPriceStep, latestPrice } from "@/utils/math";
 
 const Home = () => {
   const lookbacks = ["1", "7", "14", "30", "60", "90"];
@@ -62,7 +63,7 @@ const Home = () => {
   const handleFormSubmit = (values: OptionFormData) => {
     const payload = {
       token: tokens[tokenInd],
-      price_step: 1,
+      price_step: calcPriceStep(latestPrice(priceData)),
       num_rows: 10,
       expiry: values.maturity,
       volatility: values.volatility,

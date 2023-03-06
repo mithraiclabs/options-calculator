@@ -10,6 +10,8 @@ import {
   Text,
   useToast,
   Button,
+  Spacer,
+  Divider,
 } from "@chakra-ui/react";
 import { FormikConfig, useFormik } from "formik";
 import ExpirationInput from "./Expiration";
@@ -45,6 +47,7 @@ const OptionForm: React.FC<OptionFormProps> = ({
   const [interestDate, setInterestDate] = useState<string>("");
   const [vAlgo, setVAlgo] = useState(volatilityAlgos[0]);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [estVolatility, setEstVolatility] = useState(0);
 
   const toast = useToast();
   const formik = useFormik<OptionFormData>({
@@ -93,6 +96,7 @@ const OptionForm: React.FC<OptionFormProps> = ({
         },
       })
       .then((res) => {
+        setEstVolatility(res.data.volatility);
         formik.setFieldValue("volatility", res.data.volatility);
         setIsCalculating(false);
       })
@@ -133,7 +137,8 @@ const OptionForm: React.FC<OptionFormProps> = ({
             value={lookback}
             onChange={onLookbackChange}
           />
-          <FormLabel>Volatility algorithm</FormLabel>
+          <Divider py={4} />
+          <FormLabel>Volatility</FormLabel>
           <RadioGroup
             options={volatilityAlgos}
             value={vAlgo}
@@ -141,8 +146,16 @@ const OptionForm: React.FC<OptionFormProps> = ({
           />
           <Text as="i" fontSize="sm" color="grey">
             Estimated Volatility:{" "}
-            {isCalculating ? "Calculating" : formik.values.volatility * 100}%
+            {isCalculating ? "Calculating" : estVolatility * 100}%
           </Text>
+          <NumberInput
+            value={formik.values.volatility * 100}
+            onChange={(val) =>
+              formik.setFieldValue("volatility", parseFloat(val) / 100)
+            }
+          >
+            <NumberInputField />
+          </NumberInput>
           <FormLabel>Interest rates</FormLabel>
           <NumberInput
             value={formik.values.interestRate * 100}
@@ -154,10 +167,13 @@ const OptionForm: React.FC<OptionFormProps> = ({
             </Text>
           </NumberInput>
           <FormLabel>Days till maturity</FormLabel>
-          <ExpirationInput
+          <NumberInput
             value={formik.values.maturity}
             onChange={(val) => formik.setFieldValue("maturity", val)}
-          />
+          >
+            <NumberInputField />
+          </NumberInput>
+          <Spacer />
           <Button onClick={() => formik.handleSubmit()}>Calculate</Button>
         </VStack>
       </FormControl>
