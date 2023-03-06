@@ -3,6 +3,7 @@
 # build files
 node_modules/
 .next/
+dist/
 
 # environment files
 .env*
