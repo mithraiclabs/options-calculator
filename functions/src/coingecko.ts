@@ -1,5 +1,4 @@
 import { CoinGeckoClient } from "coingecko-api-v3";
-import { sleep } from "./util";
 
 const client = new CoinGeckoClient({
   timeout: 1000,
@@ -55,26 +54,18 @@ export const getSimplePrice = async (id: string) => {
  * @param lookbackPeriod days before, defaults to 1
  * @returns
  */
-export const getHistoricalPrices = async (
-  coinList: Array<string>,
-  lookbackPeriod = 1
-) => {
-  const priceList: { [id: string]: Array<Array<number>> } = {};
-  for (const coin of coinList) {
-    await client
-      .coinIdMarketChart({
-        id: coin,
-        vs_currency: "usd",
-        days: lookbackPeriod,
-      })
-      .then((resp: any) => {
-        console.log("Retrieved prices for:", coin);
-        priceList[coin] = resp.prices;
-      })
-      .catch((err: any) => {
-        console.log("Error retrieving prices for:", coin, err);
-      });
-    await sleep(2000);
-  }
-  return priceList;
+export const getHistoricalPrices = async (coin: string, lookbackPeriod = 1) => {
+  return client
+    .coinIdMarketChart({
+      id: coin,
+      vs_currency: "usd",
+      days: lookbackPeriod,
+    })
+    .then((resp: any) => {
+      console.log("Retrieved prices for:", coin);
+      return resp.prices;
+    })
+    .catch((err: any) => {
+      console.log("Error retrieving prices for:", coin, err);
+    });
 };

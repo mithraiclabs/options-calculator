@@ -28,34 +28,31 @@ export const storeInterestYields = (
   rows: Array<{ [field: string]: string }>
 ) => {
   const yieldCol = db.collection("yields");
-  rows.forEach((row) => {
+  const updates = [];
+  for (const row of rows) {
     const date = row["Date"];
     const yieldDoc = yieldCol.doc(date);
-    yieldDoc.set({
-      ...row,
-      Date: new Date(date),
-    });
-  });
+    updates.push(
+      yieldDoc.set({
+        ...row,
+        Date: new Date(date),
+      })
+    );
+  }
+  return Promise.all(updates);
 };
 
 export const storeCoinPrices = (
-  coinPrices: {
-    [id: string]: Array<Array<number>>;
-  },
+  coin: string,
+  prices: Array<Array<number>>,
   date: Date
 ) => {
-  const batch = db.batch();
-
-  Object.entries(coinPrices).forEach(([id, prices]) => {
-    const priceCol = db.collection("coins").doc(id).collection("prices");
-    const priceDoc = priceCol.doc(formatDate(date));
-    batch.set(priceDoc, {
-      date: date,
-      value: JSON.stringify(prices),
-    });
+  const priceCol = db.collection("coins").doc(coin).collection("prices");
+  const priceDoc = priceCol.doc(formatDate(date));
+  return priceDoc.set({
+    date: date,
+    value: JSON.stringify(prices),
   });
-
-  batch.commit();
 };
 
 // export const storeVolatility = (coinId: string) => {

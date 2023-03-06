@@ -1,6 +1,4 @@
 import { OHLCData } from "@/types/price";
-// @ts-expect-error
-import bs from "black-scholes";
 
 export const stdDev = (data: number[]) => {
   const mean = calcMean(data);
