@@ -4,6 +4,7 @@ import {
   CoinMarket,
   CoinMarketChartResponse,
 } from "coingecko-api-v3/dist/Interface";
+import { getPrices } from "./firestore";
 
 const client = new CoinGeckoClient({
   timeout: 1000,
@@ -43,6 +44,25 @@ export const fetchPrices = (
         };
       })
     );
+};
+
+/**
+ * @param token token id
+ * @param lookback days to look back
+ * @returns
+ */
+export const fetchPricesCached = (
+  token: string,
+  lookback: number
+): Promise<PriceData[]> => {
+  return getPrices(token, lookback).then((data) =>
+    data.map((val) => {
+      return {
+        date: new Date(val[0]),
+        price: val[1],
+      };
+    })
+  );
 };
 
 /**

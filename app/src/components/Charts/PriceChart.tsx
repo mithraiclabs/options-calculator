@@ -1,5 +1,5 @@
 import { PriceData } from "@/types/price";
-import { capitalise } from "@/utils/strings";
+import { capitalise, sampleData } from "@/utils/strings";
 import { VStack, Text } from "@chakra-ui/react";
 import moment from "moment";
 import {
@@ -35,7 +35,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ token, data }) => {
         {capitalise(token)} Price Chart
       </Text>
       <ResponsiveContainer width="100%" height={500}>
-        <LineChart width={600} data={data}>
+        <LineChart width={600} data={sampleData(data, 200)}>
           <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
           <XAxis dataKey={"date"} scale="time" tickFormatter={dateFormatter} />
           <YAxis domain={[min, max]} />
