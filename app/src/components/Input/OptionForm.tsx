@@ -12,9 +12,12 @@ import {
   Button,
   Spacer,
   Divider,
+  Switch,
+  Box,
+  HStack,
+  Stack,
 } from "@chakra-ui/react";
 import { FormikConfig, useFormik } from "formik";
-import ExpirationInput from "./Expiration";
 import RadioGroup from "./RadioGroup";
 import axios from "axios";
 import { OptionFormData } from "@/types/form";
@@ -43,6 +46,7 @@ const OptionForm: React.FC<OptionFormProps> = ({
 }) => {
   const timeIntervals = ["30min", "4h", "4d"];
   const volatilityAlgos = ["std_dev", "yang_zhang"];
+
   const [timeInterval, setTimeInterval] = useState(timeIntervals[0]);
   const [interestDate, setInterestDate] = useState<string>("");
   const [vAlgo, setVAlgo] = useState(volatilityAlgos[0]);
@@ -114,70 +118,133 @@ const OptionForm: React.FC<OptionFormProps> = ({
   }, [vAlgo, lookback, tokenInd]);
 
   return (
-    <Container p={10} w={800}>
+    <Stack w="full">
       <FormControl>
-        <VStack align="left">
-          <FormLabel>Token</FormLabel>
-          <Select value={tokens[tokenInd]} onChange={onTokenChange}>
-            {tokens.map((token, i) => (
-              <option key={i} value={token}>
-                {token}
-              </option>
-            ))}
-          </Select>
-          <FormLabel>Candlestick interval</FormLabel>
-          <RadioGroup
-            options={timeIntervals}
-            value={timeInterval}
-            onChange={() => null}
-          />
-          <FormLabel>Lookback (days)</FormLabel>
-          <RadioGroup
-            options={lookbacks}
-            value={lookback}
-            onChange={onLookbackChange}
-          />
-          <Divider py={4} />
-          <FormLabel>Volatility</FormLabel>
-          <RadioGroup
-            options={volatilityAlgos}
-            value={vAlgo}
-            onChange={setVAlgo}
-          />
-          <Text as="i" fontSize="sm" color="grey">
-            Estimated Volatility:{" "}
-            {isCalculating ? "Calculating" : estVolatility * 100}%
-          </Text>
-          <NumberInput
-            value={formik.values.volatility * 100}
-            onChange={(val) =>
-              formik.setFieldValue("volatility", parseFloat(val) / 100)
-            }
-          >
-            <NumberInputField />
-          </NumberInput>
-          <FormLabel>Interest rates</FormLabel>
-          <NumberInput
-            value={formik.values.interestRate * 100}
-            isDisabled={true}
-          >
-            <NumberInputField />
+        <VStack align="left" spacing={4}>
+          <Box>
+            <FormLabel>Token</FormLabel>
+            <Select value={tokens[tokenInd]} onChange={onTokenChange}>
+              {tokens.map((token, i) => (
+                <option key={i} value={token}>
+                  {token}
+                </option>
+              ))}
+            </Select>
+          </Box>
+          <Box>
+            <FormLabel>Candlestick interval</FormLabel>
+            <RadioGroup
+              options={timeIntervals}
+              value={timeInterval}
+              onChange={() => null}
+            />
+          </Box>
+          <Box>
+            <FormLabel>Lookback (days)</FormLabel>
+            <RadioGroup
+              options={lookbacks}
+              value={lookback}
+              onChange={onLookbackChange}
+            />
+          </Box>
+          <Divider />
+          <Box>
+            <FormLabel>Volatility</FormLabel>
+            <RadioGroup
+              options={volatilityAlgos}
+              value={vAlgo}
+              onChange={setVAlgo}
+            />
             <Text as="i" fontSize="sm" color="grey">
-              Retrieved from nasdaq {interestDate}
+              Estimated Volatility:{" "}
+              {isCalculating ? "Calculating" : estVolatility * 100}%
             </Text>
-          </NumberInput>
-          <FormLabel>Days till maturity</FormLabel>
-          <NumberInput
-            value={formik.values.maturity}
-            onChange={(val) => formik.setFieldValue("maturity", val)}
-          >
-            <NumberInputField />
-          </NumberInput>
-          <Spacer />
+            <NumberInput
+              mt={2}
+              value={formik.values.volatility * 100}
+              onChange={(val) =>
+                formik.setFieldValue("volatility", parseFloat(val) / 100)
+              }
+            >
+              <NumberInputField />
+            </NumberInput>
+          </Box>
+          <Box>
+            <FormLabel>Interest rates</FormLabel>
+            <NumberInput
+              value={formik.values.interestRate * 100}
+              isDisabled={true}
+            >
+              <NumberInputField />
+              <Text as="i" fontSize="sm" color="grey">
+                Retrieved from nasdaq {interestDate}
+              </Text>
+            </NumberInput>
+          </Box>
+          <Box>
+            <FormLabel>Days till maturity</FormLabel>
+            <NumberInput
+              value={formik.values.maturity}
+              onChange={(val) => formik.setFieldValue("maturity", val)}
+            >
+              <NumberInputField />
+            </NumberInput>
+          </Box>
+
+          <HStack w="100%" spacing={2} align="center">
+            <FormLabel mb={0}>Calculate Spread</FormLabel>
+            <Switch
+              isChecked={formik.values.isSpread}
+              onChange={() =>
+                formik.setFieldValue("isSpread", !formik.values.isSpread)
+              }
+            />
+          </HStack>
+
+          {formik.values.isSpread ? (
+            <Box>
+              <FormLabel>Buy Strike / Sell Strike</FormLabel>
+              <HStack w="100%" spacing={10} align="center">
+                <NumberInput
+                  value={formik.values.buyStrike}
+                  onChange={(val) => formik.setFieldValue("buyStrike", val)}
+                >
+                  <NumberInputField />
+                </NumberInput>
+                <Text>/</Text>
+                <NumberInput
+                  value={formik.values.sellStrike}
+                  onChange={(val) => formik.setFieldValue("sellStrike", val)}
+                >
+                  <NumberInputField />
+                </NumberInput>
+              </HStack>
+            </Box>
+          ) : (
+            <Box>
+              <FormLabel>Strike range</FormLabel>
+              <HStack w="100%" spacing={10} align="center">
+                <NumberInput
+                  value={formik.values.minStrike}
+                  onChange={(val) => formik.setFieldValue("minStrike", val)}
+                >
+                  <NumberInputField />
+                </NumberInput>
+                <Text>-</Text>
+                <NumberInput
+                  value={formik.values.maxStrike}
+                  onChange={(val) => formik.setFieldValue("maxStrike", val)}
+                >
+                  <NumberInputField />
+                </NumberInput>
+              </HStack>
+            </Box>
+          )}
+
           <Button onClick={() => formik.handleSubmit()}>Calculate</Button>
         </VStack>
       </FormControl>
-    </Container>
+    </Stack>
   );
 };
 

@@ -3,4 +3,9 @@ export interface OptionFormData {
   volatility: number;
   interestRate: number;
   maturity: number;
+  isSpread: boolean;
+  minStrike?: number;
+  maxStrike?: number;
+  buyStrike?: number;
+  sellStrike?: number;
 }

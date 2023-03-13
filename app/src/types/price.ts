@@ -28,3 +28,13 @@ export interface OptionData {
   call: Greeks | null;
   put: Greeks | null;
 }
+
+export interface SpreadOptionData {
+  symbol: string;
+  spot: number;
+  expiry: Date;
+  buyStrike: number;
+  sellStrike: number;
+  buyGreeks: Greeks;
+  sellGreeks: Greeks;
+}

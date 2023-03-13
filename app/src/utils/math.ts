@@ -1,10 +1,13 @@
 import { PriceData } from "@/types/price";
 
-export const round = (num: number | undefined, dp: number): number => {
+export const round = (num: number | undefined, dp?: number): number => {
   if (num === undefined) {
     return 0;
   }
-  return Math.round(num * 10 ** dp) / 10 ** dp;
+  if (dp) {
+    return Math.round(num * 10 ** dp) / 10 ** dp;
+  }
+  return Math.round(num);
 };
 
 export const latestPrice = (data: PriceData[]): number => {
