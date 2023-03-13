@@ -1,7 +1,6 @@
 import { SpreadOptionData } from "@/types/price";
 import { getCurrentPrice } from "@/utils/api";
 import { BS, BSHolder } from "@/utils/bs";
-import { getPrices } from "@/utils/firestore";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ReqInput = {
