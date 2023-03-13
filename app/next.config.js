@@ -9,7 +9,6 @@ const nextConfig = {
 
     return config;
   },
-  distDir: "dist",
 };
 
 module.exports = nextConfig;
