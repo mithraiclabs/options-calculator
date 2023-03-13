@@ -5,7 +5,7 @@ import Layout from "@/components/Layout/Layout";
 import GreeksTable from "@/components/Table/GreeksTable";
 import { OptionData, PriceData } from "@/types/price";
 import PriceChart from "@/components/Charts/PriceChart";
-import { fetchPrices, fetchTokens } from "@/utils/api";
+import { fetchPrices, fetchPricesCached, fetchTokens } from "@/utils/api";
 import { OptionFormData } from "@/types/form";
 import axios from "axios";
 import { calcPriceStep, latestPrice } from "@/utils/math";
@@ -47,7 +47,7 @@ const Home = () => {
 
   // Update graph on token change
   useEffect(() => {
-    fetchPrices(tokens[tokenInd], parseInt(lookback))
+    fetchPricesCached(tokens[tokenInd], parseInt(lookback))
       .then((data) => setPriceData(data))
       .catch((e) => {
         toast({

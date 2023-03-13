@@ -1,4 +1,4 @@
-import { OHLCData } from "@/types/price";
+import { OHLCData, PriceData } from "@/types/price";
 
 export const stdDev = (data: number[]) => {
   const mean = calcMean(data);
@@ -20,6 +20,7 @@ export const calcYangZhangVolatility = (
   data: OHLCData[],
   lookback: number
 ): number => {
+  const n = data.length;
   let close_vol = 0;
   let open_vol = 0;
   let window_rs = 0;
@@ -42,11 +43,11 @@ export const calcYangZhangVolatility = (
     window_rs += rs;
   }
 
-  close_vol = close_vol * (1.0 / (lookback - 1.0));
-  open_vol = open_vol * (1.0 / (lookback - 1.0));
-  window_rs = window_rs * (1.0 / (lookback - 1.0));
+  close_vol = close_vol * (1.0 / (n - 1.0));
+  open_vol = open_vol * (1.0 / (n - 1.0));
+  window_rs = window_rs * (1.0 / (n - 1.0));
 
-  const k = 0.34 / (1.34 + (lookback + 1) / (lookback - 1));
+  const k = 0.34 / (1.34 + (n + 1) / (n - 1));
   const yz = open_vol + k * close_vol + (1 - k) * window_rs;
 
   const num_periods = lookback <= 2 ? 48 : lookback <= 30 ? 6 : 0.25;
@@ -58,7 +59,7 @@ export const calcYangZhangVolatility = (
  * Note: 365 trading days per year for crypto
  * @param data - array of ohlc data
  */
-export const calcStdDevVolatility = (
+export const calcStdDevVolatilityOHLC = (
   data: OHLCData[],
   lookback: number
 ): number => {
@@ -67,4 +68,25 @@ export const calcStdDevVolatility = (
   });
   const num_periods = lookback <= 2 ? 48 : lookback <= 30 ? 6 : 0.25;
   return stdDev(percentChange) * Math.sqrt(365) * Math.sqrt(num_periods);
+};
+
+/**
+ * Calculates the annual historical volatility of a given set of data
+ * Note: 365 trading days per year for crypto
+ * @param data - array of ohlc data
+ */
+export const calcStdDevVolatility = (
+  data: number[][],
+  lookback: number
+): number => {
+  const percentChange = [];
+  for (let i = 1; i < data.length; i++) {
+    percentChange.push(data[i][1] / data[i - 1][1] - 1);
+  }
+  // const num_periods = lookback <= 2 ? 48 : lookback <= 30 ? 6 : 0.25;
+  return (
+    stdDev(percentChange) *
+    Math.sqrt(365) *
+    Math.sqrt(percentChange.length / lookback)
+  );
 };
