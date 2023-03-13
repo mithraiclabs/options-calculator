@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "deploy-functions": "cd functions && yarn deploy"
+    "lint": "next lint"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.5.0",
