@@ -35,6 +35,6 @@ export interface SpreadOptionData {
   expiry: Date;
   buyStrike: number;
   sellStrike: number;
-  buyGreeks: Greeks | null;
-  sellGreeks: Greeks | null;
+  buyGreeks: Greeks;
+  sellGreeks: Greeks;
 }

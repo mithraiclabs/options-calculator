@@ -14,12 +14,13 @@ import {
 import OptionForm from "@/components/Input/OptionForm";
 import Layout from "@/components/Layout/Layout";
 import GreeksTable from "@/components/Table/GreeksTable";
-import { OptionData, PriceData } from "@/types/price";
+import { OptionData, PriceData, SpreadOptionData } from "@/types/price";
 import PriceChart from "@/components/Charts/PriceChart";
 import { fetchPrices, fetchPricesCached, fetchTokens } from "@/utils/api";
 import { OptionFormData } from "@/types/form";
 import axios from "axios";
 import { calcPriceStep, latestPrice } from "@/utils/math";
+import SpreadGreeksTable from "@/components/Table/SpreadGreeksTable";
 
 const Home = () => {
   const lookbacks = ["1", "7", "14", "30", "60", "90"];
@@ -29,6 +30,9 @@ const Home = () => {
   const [lookback, setLookback] = useState(lookbacks[0]);
   const [priceData, setPriceData] = useState<PriceData[]>([]);
   const [optionData, setOptionData] = useState<OptionData[]>([]);
+  const [isSpread, setIsSpread] = useState(false);
+  const [spreadOptionData, setSpreadOptionData] =
+    useState<SpreadOptionData | null>(null);
 
   const toast = useToast();
 
@@ -73,6 +77,7 @@ const Home = () => {
   }, [tokens, tokenInd, toast, lookback]);
 
   const handleFormSubmit = (values: OptionFormData) => {
+    setIsSpread(values.isSpread);
     if (!values.isSpread) {
       const payload = {
         token: tokens[tokenInd],
@@ -107,7 +112,20 @@ const Home = () => {
         buy_strike: values.buyStrike,
         sell_strike: values.sellStrike,
       };
-      console.log(payload);
+      axios
+        .get("/api/bs_spread", { params: payload })
+        .then((res) => {
+          setSpreadOptionData(res.data);
+        })
+        .catch((e) => {
+          toast({
+            title: "failed to fetch spread option data",
+            description: e.toString(),
+            status: "error",
+            position: "top-right",
+            isClosable: true,
+          });
+        });
     }
   };
 
@@ -150,7 +168,11 @@ const Home = () => {
       <VStack ml={{ base: 0, md: 450 }} p={10} spacing={5}>
         <PriceChart token={tokens[tokenInd]} data={priceData} />
         <Spacer />
-        <GreeksTable data={optionData} />
+        {isSpread ? (
+          <SpreadGreeksTable data={spreadOptionData} />
+        ) : (
+          <GreeksTable data={optionData} />
+        )}
       </VStack>
     </Layout>
   );
