@@ -137,32 +137,34 @@ const Home = () => {
         borderRightColor="gray.200"
         w={{ base: "full", md: 450 }}
         pos="fixed"
-        h="full"
+        h="100vh"
         px={10}
       >
-        <Flex
-          h={20}
-          alignItems="center"
-          justifyContent="space-between"
-          w="100%"
-        >
-          <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-            Options Pricing Calculator
-          </Text>
-          {/* <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} /> */}
+        <Flex h="full" direction="column">
+          <Flex
+            h={20}
+            alignItems="center"
+            justifyContent="space-between"
+            w="100%"
+          >
+            <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
+              Options Pricing Calculator
+            </Text>
+            {/* <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} /> */}
+          </Flex>
+          <OptionForm
+            tokens={tokens}
+            lookbacks={lookbacks}
+            lookback={lookback}
+            onLookbackChange={setLookback}
+            tokenInd={tokenInd}
+            onTokenChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setTokenInd(e.target.selectedIndex)
+            }
+            defaultValues={formValues}
+            onSubmit={handleFormSubmit}
+          />
         </Flex>
-        <OptionForm
-          tokens={tokens}
-          lookbacks={lookbacks}
-          lookback={lookback}
-          onLookbackChange={setLookback}
-          tokenInd={tokenInd}
-          onTokenChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            setTokenInd(e.target.selectedIndex)
-          }
-          defaultValues={formValues}
-          onSubmit={handleFormSubmit}
-        />
       </Box>
 
       <VStack ml={{ base: 0, md: 450 }} p={10} spacing={5}>

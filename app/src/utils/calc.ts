@@ -80,13 +80,14 @@ export const calcStdDevVolatility = (
   lookback: number
 ): number => {
   const percentChange = [];
+  const intervals = [];
   for (let i = 1; i < data.length; i++) {
-    percentChange.push(data[i][1] / data[i - 1][1] - 1);
+    percentChange.push(Math.log(data[i][1] / data[i - 1][1]));
+    intervals.push(data[i][0] - data[i - 1][0]);
   }
   // const num_periods = lookback <= 2 ? 48 : lookback <= 30 ? 6 : 0.25;
-  return (
-    stdDev(percentChange) *
-    Math.sqrt(365) *
-    Math.sqrt(percentChange.length / lookback)
-  );
+  const averageInterval =
+    intervals.reduce((a, b) => a + b) / intervals.length / 1000;
+  const numPeriods = (24 * 60 * 60) / averageInterval;
+  return stdDev(percentChange) * Math.sqrt(365) * Math.sqrt(numPeriods);
 };

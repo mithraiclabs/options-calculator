@@ -118,7 +118,22 @@ const OptionForm: React.FC<OptionFormProps> = ({
   }, [vAlgo, lookback, tokenInd]);
 
   return (
-    <Stack w="full">
+    <Stack
+      w="full"
+      h="full"
+      overflowY="scroll"
+      css={{
+        "&::-webkit-scrollbar": {
+          width: "4px",
+        },
+        "&::-webkit-scrollbar-track": {
+          width: "6px",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          borderRadius: "24px",
+        },
+      }}
+    >
       <FormControl>
         <VStack align="left" spacing={4}>
           <Box>
